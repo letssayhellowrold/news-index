@@ -1,4 +1,4 @@
-export async function GET(request) {
+export async function GET() {
   // 在这里处理你的数据请求，可能是从数据库或外部API获取数据
   const data = {
     // 一些示例数据
