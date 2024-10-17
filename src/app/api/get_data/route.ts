@@ -109,6 +109,7 @@ async function runPythonScript() {
   try {
     jsonData = JSON.parse(output);
   } catch (parseError) {
+    console.error("解析Python脚本输出时出错", parseError);
     throw new Error("解析Python脚本输出时出错");
   }
 
