@@ -21,7 +21,7 @@ const LineChartComponent: React.FC<{
   data: { message: string[]; value: number[] };
 }> = ({ data }) => {
   const chartRef = useRef<HTMLDivElement>(null);
-  console.log(data);
+  // console.log(data);
   useEffect(() => {
     // 确保DOM元素已经被渲染
     if (chartRef.current) {

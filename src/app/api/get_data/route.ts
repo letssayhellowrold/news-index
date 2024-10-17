@@ -7,7 +7,7 @@ import { DateTime } from "luxon"; // 导入 Luxon 以便处理日期
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-console.log(__dirname);
+// console.log(__dirname);
 
 export async function GET() {
   const excelFilePath = path.join(
@@ -28,16 +28,31 @@ export async function GET() {
     await workbook.xlsx.readFile(excelFilePath);
     const worksheet = workbook.worksheets[0];
 
-    // 假设时间戳在 C1，message 和 value 列分别在 A 和 B 列
-    const timestampCell = worksheet.getCell(`C1`).text; // 假设 C1 是时间戳所在的单元格
-    const previousTimestamp = DateTime.fromISO(timestampCell); // 解析时间戳
+    // 假设时间戳在 C2，message 和 value 列分别在 A 和 B 列
+    const timestampCell = worksheet.getCell(`C2`).text; // 假设 C2 是时间戳所在的单元格
+
+    // 稍后确保用这个格式解析时间戳
+    const timestampFormat = "yyyy-MM-dd HH:mm:ss"; // 指定格式
+    // 打印读取的时间戳
+    console.log(`读取的时间戳：${timestampCell}`);
+
+    // 使用指定格式解析时间戳
+    const previousTimestamp = DateTime.fromFormat(
+      timestampCell,
+      timestampFormat
+    );
+
+    // 检查解析结果
+    if (!previousTimestamp.isValid) {
+      throw new Error(`无效的时间戳：${timestampCell}`);
+    }
 
     const now = DateTime.now();
-    const diffInMonths = now.diff(previousTimestamp, "months").months;
-
+    const diffInDays = now.diff(previousTimestamp, "days").days; // 计算时间差
+    console.log(`时间差：${diffInDays} 天`);
     // 检查时间差
-    if (diffInMonths >= 1) {
-      // 超过一个月，调用 Python 脚本重新生成 Excel 文件
+    if (diffInDays >= 30) {
+      // 超过30天，调用 Python 脚本重新生成 Excel 文件
       await runPythonScript();
     }
 
