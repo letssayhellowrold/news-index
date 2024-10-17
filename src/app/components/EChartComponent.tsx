@@ -21,13 +21,18 @@ const LineChartComponent: React.FC<{
   data: { message: string[]; value: number[] };
 }> = ({ data }) => {
   const chartRef = useRef<HTMLDivElement>(null);
-
+  console.log(data);
   useEffect(() => {
     // 确保DOM元素已经被渲染
     if (chartRef.current) {
-      const chart = echarts.init(chartRef.current, undefined, {
-        renderer: "canvas",
-      });
+      // 检查当前DOM是否已有ECharts实例
+      let chart = echarts.getInstanceByDom(chartRef.current);
+      // 如果不存在实例，则初始化
+      if (!chart) {
+        chart = echarts.init(chartRef.current, undefined, {
+          renderer: "canvas",
+        });
+      }
 
       // 指定图表的配置项和数据
       const option = {

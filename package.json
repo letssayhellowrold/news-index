@@ -10,13 +10,16 @@
   },
   "dependencies": {
     "echarts": "^5.5.1",
+    "exceljs": "^4.4.0",
     "i": "^0.3.7",
+    "luxon": "^3.5.0",
     "news_index": "file:",
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@types/luxon": "^3.4.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
