@@ -1,6 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import EChartComponent from "./components/EChartComponent";
+import { Metadata } from "next";
+
+export const metadate: Metadata = {
+  title: "home",
+};
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -19,10 +24,5 @@ export default function Home() {
     fetchData(); // 调用异步函数
   }, []);
 
-  return (
-    <div>
-      {/* 渲染图表组件并传递数据 */}
-      {data && <EChartComponent data={data} />}
-    </div>
-  );
+  return <div>{data && <EChartComponent data={data} />}</div>;
 }

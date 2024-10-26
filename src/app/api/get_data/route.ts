@@ -2,12 +2,13 @@ import { fileURLToPath } from "url";
 import path from "path";
 import { spawn } from "child_process";
 import fs from "fs"; // 导入 fs 模块
-import Excel from "exceljs"; // 导入 ExcelJS 以读取 Excel 文件
+import Excel, { CellValue } from "exceljs"; // 导入 ExcelJS 以读取 Excel 文件
 import { DateTime } from "luxon"; // 导入 Luxon 以便处理日期
 
+// 定义 __filename 和 __dirname 变量，分别表示当前文件的绝对路径和目录
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// console.log(__dirname);
+// console.log(__filename, __dirname);
 
 export async function GET() {
   const excelFilePath = path.join(
@@ -26,15 +27,12 @@ export async function GET() {
     // 读取 Excel 文件
     const workbook = new Excel.Workbook();
     await workbook.xlsx.readFile(excelFilePath);
-    const worksheet = workbook.worksheets[0];
+    const worksheet = workbook.worksheets[0]; // 读取 Excel 文件并获取第一个工作表
 
-    // 假设时间戳在 C2，message 和 value 列分别在 A 和 B 列
-    const timestampCell = worksheet.getCell(`C2`).text; // 假设 C2 是时间戳所在的单元格
-
+    // 获取 "timestamp" 列的第一个单元格，假设它是时间戳
+    const timestampCell = worksheet.getCell(2, 4).text;
     // 稍后确保用这个格式解析时间戳
-    const timestampFormat = "yyyy-MM-dd HH:mm:ss"; // 指定格式
-    // 打印读取的时间戳
-    console.log(`读取的时间戳：${timestampCell}`);
+    const timestampFormat = "yyyy-MM-dd"; // 指定格式
 
     // 使用指定格式解析时间戳
     const previousTimestamp = DateTime.fromFormat(
@@ -49,33 +47,42 @@ export async function GET() {
 
     const now = DateTime.now();
     const diffInDays = now.diff(previousTimestamp, "days").days; // 计算时间差
-    console.log(`时间差：${diffInDays} 天`);
+
     // 检查时间差
     if (diffInDays >= 30) {
       // 超过30天，调用 Python 脚本重新生成 Excel 文件
       await runPythonScript();
     }
 
-    // 提取 message 和 value 列的数据
-    const messageArr: string[] = [];
-    const valueArr: number[] = [];
+    // 提取 date，cosine_similarity 和 Important_Event 列的数据
+    const xAxisData = [],
+      yAxisData = [],
+      specialPoints = [];
 
     for (let i = 2; i <= worksheet.rowCount; i++) {
-      // 从第2行开始
-      const message = worksheet.getCell(`A${i}`).text; // 假设 A 列是 message
-      const value = worksheet.getCell(`B${i}`).value; // 假设 B 列是 value
+      const row = worksheet.getRow(i);
+      if (!row.hasValues) continue; // 如果当前行没有数据，则跳过
 
-      if (message) {
-        messageArr.push(message);
-      }
-      if (value) {
-        valueArr.push(value as number); // 确保 value 是数字
+      const date = row.getCell(1).value; // 第一列是日期
+      const cosineSimilarity = row.getCell(2).value; // 第二列是相似度
+      const importantEvent = row.getCell(3).value; // 第三列是重要事件
+
+      xAxisData.push(date);
+      yAxisData.push(cosineSimilarity);
+      if (importantEvent) {
+        specialPoints.push({
+          dataIndex: i - 2,
+          name: importantEvent,
+          value: cosineSimilarity,
+        });
+        // console.log(i - 1, date, cosineSimilarity, importantEvent);
       }
     }
 
-    // 返回提取的 message 和 value 数据
+    // 返回提取的 xAxisData、yAxisData 和 specialPoints 数据
+
     return new Response(
-      JSON.stringify({ message: messageArr, value: valueArr }),
+      JSON.stringify({ x: xAxisData, y: yAxisData, points: specialPoints }),
       {
         status: 200,
         headers: {
@@ -84,6 +91,8 @@ export async function GET() {
       }
     );
   } catch (error) {
+    console.error("错误信息:", error);
+
     const errorMessage =
       error instanceof Error ? error.message : "发生未知错误";
     return new Response(JSON.stringify({ error: errorMessage }), {

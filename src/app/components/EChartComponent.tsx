@@ -1,69 +1,88 @@
 import React, { useEffect, useRef } from "react";
-import * as echarts from "echarts/core";
-import { LineChart } from "echarts/charts";
-import {
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-} from "echarts/components";
-import { CanvasRenderer } from "echarts/renderers";
 
-// 折线图需要的ECharts模块
-echarts.use([
-  LineChart,
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  CanvasRenderer,
-]);
+import * as echarts from "echarts";
 
 const LineChartComponent: React.FC<{
-  data: { message: string[]; value: number[] };
+  data: {
+    x: string[];
+    y: number[];
+    points: {
+      dataIndex: number;
+      name: string;
+      symbolSize: number;
+      value: number;
+    }[];
+  };
 }> = ({ data }) => {
+  console.log(data.x, data.y, data.points);
   const chartRef = useRef<HTMLDivElement>(null);
-  // console.log(data);
+
   useEffect(() => {
-    // 确保DOM元素已经被渲染
     if (chartRef.current) {
-      // 检查当前DOM是否已有ECharts实例
       let chart = echarts.getInstanceByDom(chartRef.current);
-      // 如果不存在实例，则初始化
       if (!chart) {
         chart = echarts.init(chartRef.current, undefined, {
           renderer: "canvas",
         });
       }
 
-      // 指定图表的配置项和数据
+      const marks = data.points
+        .filter((point) => data.x[point.dataIndex] && point.value !== undefined)
+        .map((point) => ({
+          coord: [data.x[point.dataIndex], point.value],
+          label: {
+            show: true,
+            position: "inside",
+            formatter: point.name,
+            fontSize: "auto",
+            textAlign: "auto",
+          },
+          itemStyle: {
+            color: "#f0f0f0",
+          },
+        }));
+      console.log(marks);
       const option = {
+        animation: false,
+        legend: {
+          data: ["index"],
+        },
         title: {
-          text: "ECharts 折线图示例",
+          text: "linechart",
         },
         tooltip: {
           trigger: "axis",
         },
         xAxis: {
           type: "category",
-          data: data.message,
+          data: data.x,
         },
         yAxis: {
           type: "value",
         },
         series: [
           {
-            name: "示例系列",
+            name: "index",
             type: "line",
-            data: data.value,
+            data: data.y,
+            markPoint: {
+              data: marks,
+            },
           },
         ],
       };
 
-      // 使用刚指定的配置项和数据显示图表
       chart.setOption(option);
-    }
-  }, []);
 
-  return <div ref={chartRef} style={{ width: "100vw", height: "60vh" }} />;
+      return () => {
+        if (chart && !chart.isDisposed()) {
+          chart.dispose();
+        }
+      };
+    }
+  }, [data]);
+
+  return <div ref={chartRef} style={{ width: "100%", height: "60vh" }} />;
 };
 
 export default LineChartComponent;
