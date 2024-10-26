@@ -2,7 +2,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import { spawn } from "child_process";
 import fs from "fs"; // 导入 fs 模块
-import Excel, { CellValue } from "exceljs"; // 导入 ExcelJS 以读取 Excel 文件
+import Excel from "exceljs"; // 导入 ExcelJS 以读取 Excel 文件
 import { DateTime } from "luxon"; // 导入 Luxon 以便处理日期
 
 // 定义 __filename 和 __dirname 变量，分别表示当前文件的绝对路径和目录
