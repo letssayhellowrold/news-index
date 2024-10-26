@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import EChartComponent from "./components/EChartComponent";
-import { Metadata } from "next";
+// import { Metadata } from "next";
 
-export const metadate: Metadata = {
-  title: "home",
-};
+// export const metadata: Metadata = {
+//   title: "home",
+// };
 
 export default function Home() {
   const [data, setData] = useState(null);
