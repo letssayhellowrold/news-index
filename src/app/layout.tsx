@@ -26,11 +26,12 @@ export const metadata: Metadata = {
     "This news index is used to represent the relationship between news information and economic changes.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout() {
+  //   {
+  //   children,
+  // }: Readonly<{
+  //   children: React.ReactNode;
+  // }>
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
