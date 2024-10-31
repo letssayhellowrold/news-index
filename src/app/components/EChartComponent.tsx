@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
+import styles from "../styles/BasicStyles.module.css";
 
 const LineChartComponent: React.FC = () => {
   const [data, setData] = useState<{
@@ -118,7 +119,13 @@ const LineChartComponent: React.FC = () => {
     }
   }, [data]);
 
-  return <div ref={chartRef} style={{ height: "400px" }} />;
+  return (
+    <div
+      ref={chartRef}
+      className={styles.Container}
+      style={{ height: "500px" }}
+    />
+  );
 };
 
 export default LineChartComponent;

@@ -2,12 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 
 import "./globals.css";
-import Background from "./components/Background";
-import Model from "./components/Model";
-import Resource from "./components/Resource";
-import Appliaction from "./components/Application";
-import About from "./components/About";
-import EChartComponent from "./components/EChartComponent";
+import { Children } from "react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,32 +21,15 @@ export const metadata: Metadata = {
     "This news index is used to represent the relationship between news information and economic changes.",
 };
 
-export default function RootLayout() {
-  //   {
-  //   children,
-  // }: Readonly<{
-  //   children: React.ReactNode;
-  // }>
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <div>
-          <Background />
-        </div>
-        <div>
-          <Model />
-        </div>
-        {/* {children} */}
-        <EChartComponent />
-        <div>
-          <Resource />
-        </div>
-        <div>
-          <Appliaction />
-        </div>
-        <div>
-          <About />
-        </div>
+        {children}
       </body>
     </html>
   );
